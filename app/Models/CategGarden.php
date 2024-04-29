@@ -9,8 +9,9 @@ class CategGarden extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-    ];
+    protected $with = ['plants'];
 
+    public function plants(){
+        return $this->belongsToMany(Plant::class);
+    }
 }

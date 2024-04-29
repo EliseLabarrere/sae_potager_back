@@ -47,6 +47,6 @@ class User extends Authenticatable
 
     //CATEG GARDEN
     public function categ_garden(){
-        return $this->belongsTo(CategGarden::class, 'categ_garden_id', 'id')->select(['id', 'img', 'name']);
+        return $this->belongsTo(CategGarden::class);
     }
 }

@@ -42,4 +42,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected $with = ['categ_garden'];
+
+    //CATEG GARDEN
+    public function categ_garden(){
+        return $this->belongsTo(CategGarden::class, 'categ_garden_id', 'id')->select(['id', 'img', 'name']);
+    }
 }

@@ -20,4 +20,9 @@ class Plant extends Model
     public function Categ_garden(){
         return $this->belongsToMany(CategGarden::class);
     }
+
+    // TIP
+    public function tips(){
+        return $this->belongToMany(Tip::class);
+    }
 }

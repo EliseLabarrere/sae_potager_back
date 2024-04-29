@@ -13,4 +13,9 @@ class Tip extends Model
     public function keywords(){
         return $this->belongToMany(Keyword::class);
     }
+
+    // PLANT
+    public function plants(){
+        return $this->belongToMany(Plant::class);
+    }
 }

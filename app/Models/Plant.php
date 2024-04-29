@@ -9,7 +9,7 @@ class Plant extends Model
 {
     use HasFactory;
 
-    protected $with = ['categ_plant','categ_garden'];
+    protected $with = ['categ_plant','categ_garden','user'];
 
     //CATEG PLANT
     public function categ_plant(){
@@ -24,5 +24,9 @@ class Plant extends Model
     // TIP
     public function tips(){
         return $this->belongToMany(Tip::class);
+    }
+    //USER
+    public function user(){
+        return $this->belongsToMany(User::class);
     }
 }

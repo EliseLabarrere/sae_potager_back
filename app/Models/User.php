@@ -43,10 +43,15 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected $with = ['categ_garden'];
+    protected $with = ['categ_garden','plant'];
 
     //CATEG GARDEN
     public function categ_garden(){
         return $this->belongsTo(CategGarden::class);
+    }
+
+    //Plant
+    public function plant(){
+        return $this->belongsToMany(Plant::class);
     }
 }

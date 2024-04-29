@@ -13,10 +13,4 @@ class CategGarden extends Model
         'name',
     ];
 
-    protected $with = ['user'];
-
-    public function user()
-    {
-        return $this->hasOne(User::class);
-    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategGarden;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -12,12 +13,12 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    
-    /*************************
-    * Authentification Sanctum
-    *************************/
 
-    
+    /*************************
+     * Authentification Sanctum
+     *************************/
+
+
     /**
      * createUser()
      * Creating a user and their connection token
@@ -36,10 +37,10 @@ class AuthController extends Controller
             'password' => [
                 'required',
                 Password::min(8)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->uncompromised(),
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->uncompromised(),
             ],
             // 'email_verified_at' => 'nullable',
         ]);
@@ -58,12 +59,37 @@ class AuthController extends Controller
                 'message' => 'User Created Successfully',
                 'token' => $token->plainTextToken
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage()
             ], 500);
+        }
+    }
+
+    public function updateUserGarden(Request $request)
+    {
+        //Validated
+        $request->validate([
+            'categ_garden' => 'required',
+        ]);
+        $user = Auth::user();
+
+        $categGarden = CategGarden::where('slug', $request->categ_garden)->first();
+
+        if ($categGarden) {
+            $user->categ_garden_id = $categGarden->id;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User\'s garden has been updated',
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Selected garden category does not exist',
+            ], 404);
         }
     }
 
@@ -77,14 +103,16 @@ class AuthController extends Controller
      */
     public function loginUser(Request $request)
     {
-        $validateUser = Validator::make($request->all(), 
-        [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        $validateUser = Validator::make(
+            $request->all(),
+            [
+                'email' => 'required|email',
+                'password' => 'required'
+            ]
+        );
 
         try {
-            if(!Auth::attempt($request->only(['email', 'password']))){
+            if (!Auth::attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
@@ -98,7 +126,6 @@ class AuthController extends Controller
                 'message' => 'User Logged In Successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -114,13 +141,13 @@ class AuthController extends Controller
      */
     public function signOut()
     {
-        $user = Auth::user(); 
+        $user = Auth::user();
         $user->currentAccessToken()->delete();
         return response()->json(['message' => 'Utilisateur déconnecté']);
     }
 
 
-    
+
 
     /**
      * Return Info about the User
@@ -140,7 +167,7 @@ class AuthController extends Controller
      */
     public function delete()
     {
-        $user = Auth::user(); 
+        $user = Auth::user();
 
         if ($user) {
             $user->tokens->each->delete();

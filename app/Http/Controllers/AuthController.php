@@ -30,8 +30,8 @@ class AuthController extends Controller
      */
     public function createUser(Request $request)
     {
-        //Validated
-        $request->validate([
+        // Validation des données entrantes
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => [
@@ -42,27 +42,52 @@ class AuthController extends Controller
                     ->numbers()
                     ->uncompromised(),
             ],
-            // 'email_verified_at' => 'nullable',
+        ], [
+            'email.unique' => 'Email already exists',
+            'password.min' => 'Password must be at least 8 characters long and contain mixed case letters and numbers',
         ]);
+
+        // Si la validation échoue, retourner les erreurs
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
         try {
+            $existingUser = User::where('email', $request->email)->first();
+            if ($existingUser) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email already exists',
+                ], 400);
+            }
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'email_verified_at' => now()
+                'categ_garden_id' => 1,
+                'email_verified_at' => now(),
             ]);
 
-            $token = $user->createToken("API TOKEN");
+            $token = $user->createToken("API TOKEN")->plainTextToken;
+
+            $user->remember_token = $token;
+            $user->save();
 
             return response()->json([
                 'status' => true,
                 'message' => 'User Created Successfully',
-                'token' => $token->plainTextToken
+                'token' => $token,
             ], 200);
         } catch (\Throwable $th) {
+            // En cas d'erreur, retourner un message d'erreur
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -145,7 +170,6 @@ class AuthController extends Controller
         $user->currentAccessToken()->delete();
         return response()->json(['message' => 'Utilisateur déconnecté']);
     }
-
 
 
 

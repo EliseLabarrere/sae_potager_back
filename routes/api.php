@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/tokens/create', function (Request $request) {
     $token = $request->user()->createToken($request->token_name);
- 
+
     return ['token' => $token->plainTextToken];
 });
 
@@ -20,5 +20,8 @@ Route::group(['prefix' => '/auth'], function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/auth/logout', [AuthController::class, 'signOut']);
+    Route::group(['prefix' => '/auth'], function () {
+        Route::post('/updateGarden', [AuthController::class, 'updateUserGarden']);
+        Route::get('/logout', [AuthController::class, 'signOut']);
+    });
 });

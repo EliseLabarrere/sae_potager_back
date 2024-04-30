@@ -25,8 +25,16 @@ class Plant extends Model
     public function tips(){
         return $this->belongToMany(Tip::class);
     }
+
     //USER
     public function user(){
         return $this->belongsToMany(User::class);
     }
+
+    //COMPATIBILITIES
+    public function compatibilities()
+    {
+        return $this->hasMany(PlantCompatibility::class, 'plant_id')->orWhere('other_plant_id', $this->id);
+    }
+
 }

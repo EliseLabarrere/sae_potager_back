@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('categ_gardens', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->string('name');
             $table->string('img')->nullable();
             $table->timestamps();

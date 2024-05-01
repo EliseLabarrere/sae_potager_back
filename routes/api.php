@@ -15,13 +15,13 @@ Route::post('/tokens/create', function (Request $request) {
 });
 
 Route::group(['prefix' => '/auth'], function () {
-    Route::post('/create', [AuthController::class, 'createUser']);
+    Route::post('/register', [AuthController::class, 'createUser']);
     Route::get('/login', [AuthController::class, 'loginUser']);
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::group(['prefix' => '/auth'], function () {
-        Route::post('/updateGarden', [AuthController::class, 'updateUserGarden']);
-        Route::get('/logout', [AuthController::class, 'signOut']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/me', [AuthController::class, 'user'])->name('user');
+         Route::post('/updateGarden', [AuthController::class, 'updateUserGarden']);
+         Route::get('/logout', [AuthController::class, 'signOut']);
     });
 });
+
+

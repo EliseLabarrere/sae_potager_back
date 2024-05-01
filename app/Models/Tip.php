@@ -11,11 +11,11 @@ class Tip extends Model
 
     // KEYWORD
     public function keywords(){
-        return $this->belongToMany(Keyword::class);
+        return $this->belongsToMany(Keyword::class);
     }
 
     // PLANT
     public function plants(){
-        return $this->belongToMany(Plant::class);
+        return $this->belongsToMany(Plant::class);
     }
 }

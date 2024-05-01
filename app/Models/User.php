@@ -44,7 +44,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected $with = ['categ_garden','plant'];
+    protected $with = ['categ_garden','plant','reward'];
 
     //CATEG GARDEN
     public function categ_garden(){
@@ -54,5 +54,10 @@ class User extends Authenticatable
     //Plant
     public function plant(){
         return $this->belongsToMany(Plant::class);
+    }
+
+    // REWARD
+    public function reward(){
+        return $this->belongsToMany(Reward::class);
     }
 }

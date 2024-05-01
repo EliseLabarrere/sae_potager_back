@@ -1,4 +1,5 @@
 <?php
+use App\Models\Plant;
 
 return [
 
@@ -137,6 +138,10 @@ return [
             // 'users' => [
             //     'filterableAttributes'=> ['id', 'name', 'email'],
             // ],
+            Plant::class => [
+                'filterableAttributes'=> ['name'],
+                'sortableAttributes' => ['created_at'],
+            ],
         ],
     ],
 

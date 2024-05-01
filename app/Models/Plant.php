@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\EngineManager;
 
 class Plant extends Model
 {
-    use HasFactory;
+    use Searchable, HasFactory;
 
     protected $with = ['categ_plant','categ_garden','user'];
 
@@ -37,4 +39,16 @@ class Plant extends Model
         return $this->hasMany(PlantCompatibility::class, 'plant_id')->orWhere('other_plant_id', $this->id);
     }
 
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+        return [
+            'plant' => $array['name'],
+        ];
+    }
 }

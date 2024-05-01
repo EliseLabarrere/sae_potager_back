@@ -13,4 +13,8 @@ class CategPlant extends Model
         'name',
         'description',
     ];
+
+    public function plants(){
+        return $this->hasMany(Plant::class);
+    }
 }

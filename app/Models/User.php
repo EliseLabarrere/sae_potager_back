@@ -44,7 +44,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected $with = ['categ_garden','plant','reward'];
+    protected $with = ['categ_garden'];
 
     //CATEG GARDEN
     public function categ_garden(){

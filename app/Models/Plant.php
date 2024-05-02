@@ -11,7 +11,7 @@ class Plant extends Model
 {
     use Searchable, HasFactory;
 
-    protected $with = ['categ_plant','categ_garden','user'];
+    //protected $with = ['categ_plant','categ_garden','user'];
 
     //CATEG PLANT
     public function categ_plant(){
@@ -36,7 +36,7 @@ class Plant extends Model
     //COMPATIBILITIES
     public function compatibilities()
     {
-        return $this->hasMany(PlantCompatibility::class, 'plant_id')->orWhere('other_plant_id', $this->id);
+        return $this->hasMany(PlantCompatibility::class, 'plant_id', 'id');
     }
 
     /**

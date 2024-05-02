@@ -18,6 +18,7 @@ class SearchController extends Controller
             $results[] = [
                 'id' => $plant->id,
                 'name' => $plant->name,
+                'img' => $plant->img,
             ];
         }
     

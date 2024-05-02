@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tips', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->boolean('display_date')->default(false);
-            $table->string('img')->nullable();
-            $table->longText('content');
-            $table->timestamps();
+        Schema::table('plants', function (Blueprint $table) {
+            $table->after('img', function ($table) {
+                $table->string('img_group');
+            });
         });
     }
 
@@ -26,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tips');
+        Schema::table('plants', function (Blueprint $table) {
+            $table->dropColumn('img_group');
+        });
     }
 };

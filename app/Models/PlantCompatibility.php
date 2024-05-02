@@ -2,25 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PlantCompatibility extends Model
 {
-    use HasFactory;
 
-    protected $with = ['plant','other_plant'];
-
-    //PLANT
     public function plant()
     {
-        return $this->belongsToMany(Plant::class, 'plant_id');
+        return $this->belongsTo(Plant::class, 'plant_id', 'id');
     }
 
-    //OTHER PLANT
-    public function other_plant()
+    // Relation avec la table plants pour l'autre plante
+    public function otherPlant()
     {
-        return $this->belongsToMany(Plant::class, 'other_plant_id');
+        return $this->belongsTo(Plant::class, 'other_plant_id', 'id');
     }
-
 }

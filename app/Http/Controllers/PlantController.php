@@ -39,12 +39,14 @@ class PlantController extends Controller
      *
      * @urlParam id int required id of the Plant.
      */
-    public function getPlantById($id){
-        $Res = Plant::findOrFail($id);
+    public function getPlantById($id) {
+        $plant = Plant::findOrFail($id);
+    
+        $plant->load('categ_plant', 'categ_garden', 'compatibilities.otherPlant');
 
-        return response()->json($Res);
+        return response()->json($plant);
     }
-
+    
     /**
      * GET Plant that corresponds to the sowing season
      */

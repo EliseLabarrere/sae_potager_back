@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('plants', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->longText('description');
             $table->date('start_month');
             $table->date('end_month');
             $table->integer('watering_rythm');
             $table->integer('growing_time');
-            $table->string('illness');
+            $table->longText('illness');
             $table->string('img')->nullable();
             $table->foreignIdFor(\App\Models\CategPlant::class)->constrained()->cascadeOnDelete();
             $table->timestamps();

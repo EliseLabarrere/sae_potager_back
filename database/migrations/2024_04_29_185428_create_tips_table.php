@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->boolean('display_date')->default(false);
             $table->string('img')->nullable();
-            $table->string('content');
+            $table->longText('content');
             $table->timestamps();
         });
     }

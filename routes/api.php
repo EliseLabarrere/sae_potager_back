@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TipController;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/valid', [TaskController::class, 'doWateringTasks']);
         Route::post('/completed', [TaskController::class, 'completedTasks']);
         Route::post('/one', [TaskController::class, 'haveTasks']);
+        Route::get('/checkDailyTask', [TaskController::class, 'checkDailyTask']);
     });
 
     Route::group(['prefix' => 'plants'], function ($router){
@@ -48,6 +50,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'tips'], function ($router){
         $router->get('/', [TipController::class, 'getTips'])->name('get.tip');
         $router->get('/{id}', [TipController::class, 'getTipById'])->name('get.tip.by.id');
+    });
+
+    Route::group(['prefix' => '/user'], function () {
+        Route::get('/plantInGarden', [UserController::class, 'indexPlants']);
+        Route::post('/completed', [UserController::class, '']);
+        Route::post('/one', [UserController::class, '']);
     });
 
     Route::get('/search/plant',[SearchController::class,'searchPlant'])->name('plant.search');

@@ -17,8 +17,8 @@ class TaskController extends Controller
         $user = Auth::user();
         try {
             $lastTask = Task::where('user_id', $user->id)
-            ->whereDate('created_at', Carbon::today())
-            ->first();
+                ->whereDate('created_at', Carbon::today())
+                ->first();
 
             if ($lastTask) {
                 $lastWateringDate = Carbon::parse($lastTask->created_at)->startOfDay();
@@ -32,7 +32,7 @@ class TaskController extends Controller
                     ], 400);
                 } elseif ($lastWateringDate->equalTo($yesterday)) {
                     $user->watering_streak += 1;
-                    $message = "You have been watering your plants for ".$user->watering_streak." consecutive days";
+                    $message = "You have been watering your plants for " . $user->watering_streak . " consecutive days";
                 } else {
                     $user->watering_streak = 0;
                     $message = "Successful completion of daily missions";
@@ -92,8 +92,8 @@ class TaskController extends Controller
         $user = Auth::user();
 
         $plants = PlantUser::where('user_id', $user->id)
-        ->with('plant')
-        ->get();
+            ->with('plant')
+            ->get();
 
         $wateringPlants = [];
 
@@ -116,5 +116,30 @@ class TaskController extends Controller
             'message' => 'Daily tasks found',
             'wateringPlants' => $wateringPlants,
         ], 200);
+    }
+
+    public function checkDailyTask()
+    {
+        $user = Auth::user();
+        $lastTask = Task::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->first();
+
+        if ($lastTask) {
+            $lastWateringDate = Carbon::parse($lastTask->created_at)->startOfDay();
+            $today = Carbon::today();
+
+            if ($lastWateringDate->equalTo($today)) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Daily missions have already been completed for today'
+                ], 400);
+            }
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Daily tasks not yet completed'
+        ], 500);
     }
 }

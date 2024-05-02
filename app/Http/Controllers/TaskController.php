@@ -20,12 +20,25 @@ class TaskController extends Controller
             ->whereDate('created_at', Carbon::today())
             ->first();
 
-        if ($lastTask) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Daily missions have already been completed for today'
-            ], 400);
-        }
+            if ($lastTask) {
+                $lastWateringDate = Carbon::parse($lastTask->created_at)->startOfDay();
+                $today = Carbon::today();
+                $yesterday = Carbon::yesterday();
+
+                if ($lastWateringDate->equalTo($today)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Daily missions have already been completed for today'
+                    ], 400);
+                } elseif ($lastWateringDate->equalTo($yesterday)) {
+                    $user->watering_streak += 1;
+                    $message = "You have been watering your plants for ".$user->watering_streak." consecutive days";
+                } else {
+                    $user->watering_streak = 0;
+                    $message = "Successful completion of daily missions";
+                }
+            }
+            $user->save();
 
             $task = Task::create([
                 'user_id' => $user->id,
@@ -35,7 +48,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Successful completion of daily missions'
+                'message' => $message
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

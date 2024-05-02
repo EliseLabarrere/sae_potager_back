@@ -22,3 +22,6 @@ app/Models/Plant.php
 composer.json
 composer.lock
 package-lock.json
+.env.example
+app/Models/Plant.php
+composer.json

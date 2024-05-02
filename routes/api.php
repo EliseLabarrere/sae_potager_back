@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TipController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'plant'], function ($router){
         $router->get('/month', [PlantController::class, 'getPlantSeason'])->name('get.plant');
         $router->get('/{id}', [PlantController::class, 'getPlantById'])->name('get.plant.by.id');
+    });
+
+    Route::group(['prefix' => 'tips'], function ($router){
+        $router->get('/', [TipController::class, 'getTips'])->name('get.tip');
+        $router->get('/{id}', [TipController::class, 'getTipById'])->name('get.tip.by.id');
     });
 
     Route::get('/search/plant',[SearchController::class,'searchPlant'])->name('plant.search');

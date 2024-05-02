@@ -25,7 +25,7 @@ class Plant extends Model
 
     // TIP
     public function tips(){
-        return $this->belongToMany(Tip::class);
+        return $this->belongsToMany(Tip::class);
     }
 
     //USER

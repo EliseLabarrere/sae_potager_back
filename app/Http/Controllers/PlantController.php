@@ -42,7 +42,7 @@ class PlantController extends Controller
     public function getPlantById($id) {
         $plant = Plant::findOrFail($id);
     
-        $plant->load('categ_plant', 'categ_garden', 'compatibilities.otherPlant');
+        $plant->load('categ_plant', 'categ_garden', 'compatibilities.otherPlant:id,name,img','tips:title,id,img,created_at');
 
         return response()->json($plant);
     }

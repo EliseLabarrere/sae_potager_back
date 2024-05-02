@@ -7,6 +7,8 @@ use App\Models\PlantUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use DateTime;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -14,6 +16,17 @@ class TaskController extends Controller
     {
         $user = Auth::user();
         try {
+            $lastTask = Task::where('user_id', $user->id)
+            ->whereDate('created_at', Carbon::today())
+            ->first();
+
+        if ($lastTask) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Daily missions have already been completed for today'
+            ], 400);
+        }
+
             $task = Task::create([
                 'user_id' => $user->id,
             ]);
@@ -65,31 +78,30 @@ class TaskController extends Controller
 
         $user = Auth::user();
 
-        // $plant->load('categ_plant', 'categ_garden', 'compatibilities.otherPlant');
+        $plants = PlantUser::where('user_id', $user->id)
+        ->with('plant')
+        ->get();
 
+        $wateringPlants = [];
 
-        // $plants = DB::table('plant_user')
-        //     // ->join('plants', 'plant_user.plant_id', '=', 'plants.id')
-        //     ->where('plant_user.user_id', $user->id)
-        //     // ->select('plant_user.plant_id', 'plant_user.last_watering', 'plants.watering_rythm')
-        //     ->get();
+        foreach ($plants as $plant) {
+            $lastWatering = new DateTime($plant->last_watering);
 
-        // function doitEtreArrose($last_watering, $watering_rythme)
-        // {
-        //     $last_watering_date = new DateTime($last_watering);
+            $daysElapsed = $lastWatering->diff(new DateTime($request->day))->days;
 
-        //     $today = new DateTime();
-
-        //     $interval = $last_watering_date->diff($today);
-        //     $days_since_last_watering = $interval->days;
-
-        //     return ($days_since_last_watering % $watering_rythme) == 0;
-        // }
+            if (($daysElapsed % $plant->plant->watering_rythm) == 0) {
+                $wateringPlants[] = [
+                    'id' => $plant->plant->id,
+                    'name' => $plant->plant->name,
+                    'img' => $plant->plant->img,
+                ];
+            }
+        }
 
         return response()->json([
             'status' => true,
             'message' => 'Daily tasks found',
-            // 'plants' => $plants,
+            'wateringPlants' => $wateringPlants,
         ], 200);
     }
 }

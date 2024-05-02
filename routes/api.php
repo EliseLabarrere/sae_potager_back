@@ -46,4 +46,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/search/plant',[SearchController::class,'searchPlant'])->name('plant.search');
 });
-

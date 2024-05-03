@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('plant_user', function (Blueprint $table) {
             $table->after('nickname', function ($table) {
-                $table->integer('number_of_plant');
+                $table->integer('number_of_plant')->default(1);
             });
         });
     }

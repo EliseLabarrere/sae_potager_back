@@ -31,7 +31,6 @@ class UserController extends Controller
             'status' => true,
             'message' => 'Daily tasks found',
             'plantsInGarden' => $plantsInGarden,
-            'plants' => $plants,
         ], 200);
     }
 

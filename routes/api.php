@@ -56,7 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/user'], function () {
         Route::get('/plantInGarden', [UserController::class, 'indexPlants']);
         Route::get('/nextHarvests', [UserController::class, 'nextPlantsToHarvest']);
-        // Route::post('/one', [UserController::class, '']);
+        Route::get('/numberPlants/{plant_id}', [UserController::class, 'getNumberOfPlants']);
+        Route::post('/addInGarden', [UserController::class, 'addPlantInGarden']);
     });
 
     Route::get('/search/plant',[SearchController::class,'searchPlant'])->name('plant.search');

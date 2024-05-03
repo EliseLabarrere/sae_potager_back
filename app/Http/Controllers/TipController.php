@@ -16,7 +16,7 @@ class TipController extends Controller
         $tips->load('plants:id,name,img');
         return response()->json($tips);
     }
-    
+
 
     //TIPS
     /**

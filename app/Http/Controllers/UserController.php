@@ -74,4 +74,54 @@ class UserController extends Controller
             'plantsNextMonths' => $plantsNextMonths,
         ], 200);
     }
+
+    public function getNumberOfPlants($plant_id)
+    {
+        $user = Auth::user();
+
+        $plants = PlantUser::where('user_id', $user->id)
+            ->where('plant_id', $plant_id)
+            ->select('number_of_plant')
+            ->first();
+
+        if (!$plants) {
+            $numberOfPlants = 0;
+        } else {
+            $numberOfPlants = $plants->number_of_plant;
+        }
+
+        return response()->json(['number_of_plants' => $numberOfPlants]);
+    }
+
+    public function addPlantInGarden(Request $request)
+    {
+        $request->validate([
+            'plant_id' => 'required',
+            'number_to_add' => 'required',
+        ]);
+
+        $user = Auth::user();
+
+        $plant = PlantUser::where('user_id', $user->id)
+            ->where('plant_id', $request->plant_id)
+            ->first();
+
+        if (!$plant) {
+            $plant = PlantUser::create([
+                'user_id' => $user->id,
+                'plant_id' => $user->id,
+                'number_of_plant' => $request->number_to_add,
+            ]);
+            $message = "Plant added to your garden";
+        } else {
+            $plant->number_of_plant += $request->number_to_add;
+            $plant->save();
+            $message = "You added one plant to your garden, you now have " . $plant->number_of_plant . " plants";
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => $message,
+        ], 200);
+    }
 }

@@ -29,7 +29,7 @@ class TaskController extends Controller
                     return response()->json([
                         'status' => false,
                         'message' => 'Daily missions have already been completed for today'
-                    ], 400);
+                    ], 200);
                 } elseif ($lastWateringDate->equalTo($yesterday)) {
                     $user->watering_streak += 1;
                     $message = "You have been watering your plants for " . $user->watering_streak . " consecutive days";
@@ -59,6 +59,43 @@ class TaskController extends Controller
         }
     }
 
+    public function harvest(Request $request)
+    {
+        $request->validate([
+            'removeFromGarden' => 'required',
+            'idPlant' => 'required',
+        ]);
+
+        $user = Auth::user();
+        try {
+            $task = Task::create([
+                'user_id' => $user->id,
+                'watering' => false,
+            ]);
+            $task->save();
+
+            if($request->removeFromGarden == 1){
+                $plantHarvested = PlantUser::where('user_id', $user->id)
+                ->where('plant_id', $request->idPlant)
+                ->first();
+
+                $plantHarvested->delete();
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Correctly harvested plant',
+                'tache' => $task
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Daily missions could not be recorded as completed',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
     public function completedTasks(Request $request)
     {
         $request->validate([
@@ -70,9 +107,13 @@ class TaskController extends Controller
 
         $tasks = Task::where('user_id', $user->id)
             ->whereBetween('created_at', [$request->firstDate, $request->lastDate])
-            ->pluck('created_at')
-            ->map(function ($item) {
-                return $item->toDateString();
+            ->select('created_at', 'watering')
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'created_at' => $task->created_at->toDateString(),
+                    'watering' => $task->watering
+                ];
             })
             ->toArray();
 
@@ -121,25 +162,20 @@ class TaskController extends Controller
     public function checkDailyTask()
     {
         $user = Auth::user();
-        $lastTask = Task::where('user_id', $user->id)
+        $dailyTask = Task::where('user_id', $user->id)
             ->whereDate('created_at', Carbon::today())
             ->first();
 
-        if ($lastTask) {
-            $lastWateringDate = Carbon::parse($lastTask->created_at)->startOfDay();
-            $today = Carbon::today();
-
-            if ($lastWateringDate->equalTo($today)) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Daily missions have already been completed for today'
-                ], 400);
-            }
+        if ($dailyTask) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Daily missions have already been completed for today'
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Daily tasks not yet completed'
+            ], 200);
         }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Daily tasks not yet completed'
-        ], 500);
     }
 }

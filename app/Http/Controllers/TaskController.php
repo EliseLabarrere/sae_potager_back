@@ -65,15 +65,18 @@ class TaskController extends Controller
         $request->validate([
             'idPlant' => 'required',
             'numberToRemove' => 'required',
+            'harvest' => 'required'
         ]);
 
         $user = Auth::user();
         try {
-            $task = Task::create([
-                'user_id' => $user->id,
-                'watering' => false,
-            ]);
-            $task->save();
+            if ($request->harvest) {
+                $task = Task::create([
+                    'user_id' => $user->id,
+                    'watering' => false,
+                ]);
+                $task->save();
+            }
 
             if ($request->numberToRemove != 0) {
                 $plantHarvested = PlantUser::where('user_id', $user->id)

@@ -9,7 +9,9 @@ use Laravel\Scout\EngineManager;
 
 class Plant extends Model
 {
-    use Searchable, HasFactory;
+    use HasFactory;
+
+    protected $table = 'plants';
 
     //protected $with = ['categ_plant','categ_garden','user'];
 

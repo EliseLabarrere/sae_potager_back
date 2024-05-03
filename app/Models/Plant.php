@@ -9,7 +9,7 @@ use Laravel\Scout\EngineManager;
 
 class Plant extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'plants';
 

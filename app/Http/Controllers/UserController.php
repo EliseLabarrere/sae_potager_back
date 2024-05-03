@@ -36,17 +36,15 @@ class UserController extends Controller
     public function nextPlantsToHarvest()
     {
         $user = Auth::user();
-        $currentMonth = date('n'); // Obtenez le mois actuel (sans le zéro initial)
-        $nextThreeMonths = [$currentMonth, ($currentMonth + 1) % 12, ($currentMonth + 2) % 12, ($currentMonth + 3) % 12];
+        $currentMonth = date('n');
 
         $plants = PlantUser::where('user_id', $user->id)
-            ->with(['plant' => function ($query) use ($nextThreeMonths) {
-                $query->whereIn('start_harvest_month', $nextThreeMonths);
-            }])
+            ->with('plant')
             ->get();
 
         $plantsThisMonth = [];
-        $plantsNextThreeMonths = [];
+        $plantsNextMonths = [];
+
         $monthNames = [
             1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril', 5 => 'mai', 6 => 'juin',
             7 => 'juillet', 8 => 'août', 9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre'
@@ -61,10 +59,10 @@ class UserController extends Controller
                 'start_harvest_month' => $monthNames[$plant->start_harvest_month],
             ];
 
-            if (in_array($plant->start_harvest_month, [$currentMonth])) {
+            if ($plant->start_harvest_month == $currentMonth && count($plantsThisMonth) < 3) {
                 $plantsThisMonth[] = $plantInfo;
-            } elseif (count($plantsNextThreeMonths) < 3) {
-                $plantsNextThreeMonths[] = $plantInfo;
+            } else {
+                $plantsNextMonths[] = $plantInfo;
             }
         }
 
@@ -72,7 +70,7 @@ class UserController extends Controller
             'status' => true,
             'message' => 'Daily tasks found',
             'plantsThisMonth' => $plantsThisMonth,
-            'plantsNextThreeMonths' => $plantsNextThreeMonths,
+            'plantsNextMonths' => $plantsNextMonths,
         ], 200);
     }
 }

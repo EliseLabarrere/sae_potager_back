@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('nickname')->nullable();
             $table->date('last_watering')->default(now());
             $table->timestamps();
+            $table->unique(['plant_id', 'user_id']);
         });
+
     }
 
     /**

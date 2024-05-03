@@ -63,8 +63,8 @@ class TaskController extends Controller
     public function harvest(Request $request)
     {
         $request->validate([
-            'removeFromGarden' => 'required',
             'idPlant' => 'required',
+            'numberToRemove' => 'required',
         ]);
 
         $user = Auth::user();
@@ -75,18 +75,28 @@ class TaskController extends Controller
             ]);
             $task->save();
 
-            if($request->removeFromGarden == 1){
+            if ($request->numberToRemove != 0) {
                 $plantHarvested = PlantUser::where('user_id', $user->id)
-                ->where('plant_id', $request->idPlant)
-                ->first();
+                    ->where('plant_id', $request->idPlant)
+                    ->first();
 
-                $plantHarvested->delete();
+                $plantHarvested->number_of_plant -= $request->numberToRemove;
+
+                $plantHarvested->save();
+
+                if ($plantHarvested->number_of_plant == 0) {
+                    $plantHarvested->delete();
+                    $message = "You no longer have this plant in your garden";
+                } else {
+                    $message = "You have removed " . $request->numberToRemove . ", you have " . $plantHarvested->number_of_plant . " left in your garden";
+                }
+            } else {
+                $message = "You have harvested but not removed this plant from your garden";
             }
 
             return response()->json([
                 'status' => true,
-                'message' => 'Correctly harvested plant',
-                'tache' => $task
+                'message' => $message,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

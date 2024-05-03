@@ -32,6 +32,7 @@ Route::group(['prefix' => '/auth'], function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/task'], function () {
         Route::get('/valid', [TaskController::class, 'doWateringTasks']);
+        Route::post('/harvest', [TaskController::class, 'harvest']);
         Route::post('/completed', [TaskController::class, 'completedTasks']);
         Route::post('/one', [TaskController::class, 'haveTasks']);
         Route::get('/checkDailyTask', [TaskController::class, 'checkDailyTask']);
@@ -54,8 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::group(['prefix' => '/user'], function () {
         Route::get('/plantInGarden', [UserController::class, 'indexPlants']);
-        Route::post('/completed', [UserController::class, '']);
-        Route::post('/one', [UserController::class, '']);
+        Route::get('/nextHarvests', [UserController::class, 'nextPlantsToHarvest']);
+        // Route::post('/one', [UserController::class, '']);
     });
 
     Route::get('/search/plant',[SearchController::class,'searchPlant'])->name('plant.search');

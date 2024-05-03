@@ -58,6 +58,7 @@ class UserController extends Controller
                 'name' => $plant->name,
                 'img' => $plant->img,
                 'start_harvest_month' => $monthNames[$plant->start_harvest_month],
+                'start_harvest_month_nbr' => $plant->start_harvest_month,
             ];
 
             if ($plant->start_harvest_month == $currentMonth && count($plantsThisMonth) < 3) {

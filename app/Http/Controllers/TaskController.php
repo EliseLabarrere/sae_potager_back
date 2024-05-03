@@ -18,6 +18,7 @@ class TaskController extends Controller
         try {
             $lastTask = Task::where('user_id', $user->id)
                 ->whereDate('created_at', Carbon::today())
+                ->where('watering', true)
                 ->first();
 
             if ($lastTask) {
@@ -109,13 +110,25 @@ class TaskController extends Controller
             ->whereBetween('created_at', [$request->firstDate, $request->lastDate])
             ->select('created_at', 'watering')
             ->get()
-            ->map(function ($task) {
-                return [
-                    'created_at' => $task->created_at->toDateString(),
-                    'watering' => $task->watering
-                ];
-            })
-            ->toArray();
+            ->reduce(function ($carry, $task) {
+                $createdAt = $task->created_at->toDateString();
+                $watering = $task->watering;
+
+                // Vérifier si la combinaison 'created_at' et 'watering' existe déjà dans le tableau
+                $exists = collect($carry)->contains(function ($existingTask) use ($createdAt, $watering) {
+                    return $existingTask['created_at'] === $createdAt && $existingTask['watering'] === $watering;
+                });
+
+                // Si la combinaison n'existe pas, l'ajouter au tableau
+                if (!$exists) {
+                    $carry[] = [
+                        'created_at' => $createdAt,
+                        'watering' => $watering
+                    ];
+                }
+
+                return $carry;
+            }, []);
 
         return response()->json([
             'status' => true,
@@ -164,6 +177,7 @@ class TaskController extends Controller
         $user = Auth::user();
         $dailyTask = Task::where('user_id', $user->id)
             ->whereDate('created_at', Carbon::today())
+            ->where('watering', true)
             ->first();
 
         if ($dailyTask) {

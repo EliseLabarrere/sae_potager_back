@@ -23,6 +23,7 @@ class UserController extends Controller
                 'id' => $plant->plant->id,
                 'name' => $plant->plant->name,
                 'img' => $plant->plant->img,
+                'number_of_plant' => $plant->plant->number_of_plant
             ];
         }
 
